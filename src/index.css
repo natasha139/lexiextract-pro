@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  /* Additional cozy primary theme variables if desired */
+  --color-brand-50: #f4f7f6;
+  --color-brand-100: #e5ecea;
+  --color-brand-600: #10b981;
+  --color-brand-700: #047857;
+  --color-brand-900: #064e3b;
+}
+
+/* Print-specific layout styling so print worksheet is fully styled */
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 20mm 15mm 20mm 15mm;
+  }
+  
+  body {
+    background-color: white !important;
+    background-image: none !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-page {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    background: transparent !important;
+  }
+
+  /* Structural page break helpers */
+  .print-avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .print-break-before {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  /* Fine-tune font sizes for natural ink distribution */
+  h1 {
+    font-size: 24pt !important;
+    line-height: 1.2 !important;
+    color: #0f172a !important;
+  }
+
+  h2 {
+    font-size: 14pt !important;
+    color: #1e293b !important;
+  }
+
+  h3 {
+    font-size: 12pt !important;
+    color: #1e293b !important;
+  }
+
+  p, span, div {
+    font-size: 10.5pt !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Make writing lines bold and highly visible on paper */
+  .border-dashed {
+    border-color: #94a3b8 !important;
+    border-bottom-width: 1.5px !important;
+  }
+}
+
+/* 3D Flashcard Flip Utilities for WebKit and Standard Browsers */
+.perspective-1000 {
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* WebKit specific hardware acceleration & depth grouping trigger */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg) translate3d(0, 0, 0);
+  -webkit-transform: rotateY(180deg) translate3d(0, 0, 0);
+}
+
+
