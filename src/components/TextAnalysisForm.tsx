@@ -42,20 +42,20 @@ export default function TextAnalysisForm({ onSubmit, isLoading }: TextAnalysisFo
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-xs overflow-hidden">
-      <div className="px-6 py-5 bg-linear-to-r from-gray-900 to-slate-800 text-white flex items-center justify-between">
+    <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: "#FFFFFF", borderColor: "#E0DBD1" }}>
+      <div className="px-6 py-4 flex items-center justify-between" style={{ backgroundColor: "#0F0F0E" }}>
         <div className="flex items-center gap-3">
-          <GraduationCap className="h-6 w-6 text-emerald-400" />
+          <GraduationCap className="h-5 w-5" style={{ color: "#1C4ED8" }} />
           <div>
-            <h2 id="form-heading" className="text-lg font-display font-semibold tracking-tight text-white leading-tight">
-              Create New Corpus Analysis
+            <h2 id="form-heading" className="text-sm font-display font-semibold tracking-tight text-white leading-tight">
+              New Corpus Analysis
             </h2>
-            <p className="text-xs text-gray-300">Submit a passage to pull curriculum vocabulary, lexical bundles, and structural syntax</p>
+            <p className="text-xs mt-0.5" style={{ color: "#94A3B8" }}>Paste a passage to extract vocabulary, phrases, and sentence patterns</p>
           </div>
         </div>
-        <div className="hidden sm:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span className="text-[10px] font-mono uppercase tracking-wide text-emerald-300">Corpus Engine Active</span>
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border" style={{ borderColor: "#1C4ED8", backgroundColor: "#1C4ED820" }}>
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "#1C4ED8" }}></span>
+          <span className="text-[10px] font-mono uppercase tracking-wide" style={{ color: "#6B9EF8" }}>Engine ready</span>
         </div>
       </div>
 

@@ -161,257 +161,137 @@ export default function App() {
     setCorpusData(updated);
   };
 
+  type TabId = "input" | "analysis" | "flashcards" | "tracker" | "quiz" | "writing" | "rewrite" | "review" | "wordbank" | "export";
+
+  const NAV_ITEMS: { id: TabId; icon: React.ReactNode; label: string; sublabel?: string }[] = [
+    { id: "input",     icon: <FileInput className="h-4 w-4" />,     label: "Analyze",      sublabel: "New passage" },
+    { id: "analysis",  icon: <BookOpen className="h-4 w-4" />,      label: "Extracted",    sublabel: "Words & patterns" },
+    { id: "flashcards",icon: <Languages className="h-4 w-4" />,     label: "Flashcards",   sublabel: "Active recall" },
+    { id: "tracker",   icon: <TrendingUp className="h-4 w-4" />,    label: "Mastery",      sublabel: "Progress" },
+    { id: "quiz",      icon: <BookCheck className="h-4 w-4" />,     label: "Quiz",         sublabel: "Practice test" },
+    { id: "writing",   icon: <PenTool className="h-4 w-4" />,       label: "Writing",      sublabel: "写作练习" },
+    { id: "rewrite",   icon: <Sparkles className="h-4 w-4" />,      label: "Reconstruct",  sublabel: "AI重构" },
+    { id: "review",    icon: <Brain className="h-4 w-4" />,         label: "Review",       sublabel: "智能复习" },
+    { id: "wordbank",  icon: <BookMarked className="h-4 w-4" />,    label: "Wordbank",     sublabel: "备考词库" },
+    { id: "export",    icon: <ClipboardList className="h-4 w-4" />, label: "Export",       sublabel: "Worksheet" },
+  ];
+
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 flex flex-col text-slate-800 dark:text-slate-100 transition-colors duration-200">
-      {/* App Header */}
-      <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-40 no-print transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2.5">
-              <div className="bg-emerald-600 dark:bg-emerald-700 text-white p-2 rounded-xl shadow-xs">
-                <GraduationCap className="h-5 w-5" />
-              </div>
-              <div>
-                <h1 className="text-base font-display font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-none">
-                  Academic English Corpus Analyzer
-                </h1>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium font-sans uppercase tracking-wider mt-1">
-                  Corpus-Linguistic Exam & Curriculum Design Panel
-                </p>
-              </div>
-            </div>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#F5F2EB", color: "#0F0F0E" }}>
 
-            {/* Quick Status and Theme Toggle */}
-            <div className="flex items-center gap-3">
-              <div className="hidden md:flex items-center gap-2 text-xs text-gray-500 dark:text-slate-400 font-mono">
-                <span className="font-semibold text-gray-700 dark:text-slate-300">Target Level:</span>
-                <span className="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-800/60">
-                  {corpusData.meta_data.target_level}
-                </span>
-              </div>
-
-              {/* Theme Toggle Button */}
-              <button
-                id="theme-toggle-button"
-                onClick={toggleTheme}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 font-bold text-xs cursor-pointer shadow-3xs transition-all duration-150"
-                title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-              >
-                {theme === "light" ? (
-                  <>
-                    <Moon className="h-3.5 w-3.5 text-indigo-600" />
-                    <span className="hidden sm:inline">Dark Mode</span>
-                  </>
-                ) : (
-                  <>
-                    <Sun className="h-3.5 w-3.5 text-amber-500 animate-spin-slow" />
-                    <span className="hidden sm:inline">Light Mode</span>
-                  </>
-                )}
-              </button>
+      {/* ── Top bar ── */}
+      <header className="no-print sticky top-0 z-40 border-b" style={{ backgroundColor: "#F5F2EB", borderColor: "#E0DBD1" }}>
+        <div className="max-w-screen-xl mx-auto px-5 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 rounded flex items-center justify-center" style={{ backgroundColor: "#1C4ED8" }}>
+              <GraduationCap className="h-4 w-4 text-white" />
             </div>
+            <span className="font-display font-semibold text-sm tracking-tight" style={{ color: "#0F0F0E" }}>
+              LexiExtract
+            </span>
+            <span className="hidden sm:inline text-xs font-mono px-2 py-0.5 rounded" style={{ backgroundColor: "#EFF3FD", color: "#1C4ED8" }}>
+              {corpusData.meta_data.target_level}
+            </span>
           </div>
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border cursor-pointer transition-colors"
+            style={{ borderColor: "#E0DBD1", color: "#64748B" }}
+          >
+            {theme === "light" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+            <span className="hidden sm:inline">{theme === "light" ? "Dark" : "Light"}</span>
+          </button>
         </div>
       </header>
 
-      {/* Main Layout Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Navigation Tabs Bar */}
-        <div className="flex flex-wrap items-center gap-1.5 border-b border-gray-200 dark:border-slate-800 pb-4 no-print">
-          <button
-            onClick={() => setActiveTab("input")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "input"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <FileInput className="h-3.5 w-3.5" />
-            Analyze Passage
-          </button>
+      {/* ── Body: sidebar + content ── */}
+      <div className="flex flex-1 max-w-screen-xl mx-auto w-full">
 
-          <button
-            onClick={() => setActiveTab("analysis")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "analysis"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <BookOpen className="h-3.5 w-3.5" />
-            Extracted Items
-          </button>
+        {/* Sidebar nav — hidden on mobile, shown on md+ */}
+        <aside className="no-print hidden md:flex flex-col w-52 shrink-0 border-r py-6 px-3 gap-0.5" style={{ borderColor: "#E0DBD1" }}>
+          {NAV_ITEMS.map(({ id, icon, label, sublabel }) => {
+            const active = activeTab === id;
+            return (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-left w-full transition-all cursor-pointer group"
+                style={active
+                  ? { backgroundColor: "#EFF3FD", color: "#1C4ED8" }
+                  : { color: "#64748B" }
+                }
+              >
+                <span style={active ? { color: "#1C4ED8" } : { color: "#94A3B8" }}>{icon}</span>
+                <span className="flex flex-col min-w-0">
+                  <span className="text-xs font-semibold leading-tight">{label}</span>
+                  {sublabel && <span className="text-[10px] leading-tight opacity-60 truncate">{sublabel}</span>}
+                </span>
+                {active && <span className="ml-auto w-1 h-4 rounded-full shrink-0" style={{ backgroundColor: "#1C4ED8" }} />}
+              </button>
+            );
+          })}
+        </aside>
 
-          <button
-            onClick={() => setActiveTab("flashcards")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "flashcards"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <Languages className="h-3.5 w-3.5" />
-            Active Recall Cards
-          </button>
-
-          <button
-            onClick={() => setActiveTab("tracker")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "tracker"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <TrendingUp className="h-3.5 w-3.5" />
-            Mastery Tracker
-          </button>
-
-          <button
-            onClick={() => setActiveTab("quiz")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "quiz"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <BookCheck className="h-3.5 w-3.5" />
-            Assessment Prep Quiz
-          </button>
-
-          <button
-            onClick={() => setActiveTab("writing")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "writing"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <PenTool className="h-3.5 w-3.5" />
-            Practice Writing / 写作练习
-          </button>
-
-          <button
-            onClick={() => setActiveTab("rewrite")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "rewrite"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-            AI Essay Reconstruct / AI重构
-          </button>
-
-          <button
-            onClick={() => setActiveTab("review")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "review"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <Brain className="h-3.5 w-3.5" />
-            Smart Review / 智能复习
-          </button>
-
-          <button
-            onClick={() => setActiveTab("wordbank")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "wordbank"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <BookMarked className="h-3.5 w-3.5" />
-            Wordbank / 备考词库
-          </button>
-
-          <button
-            onClick={() => setActiveTab("export")}
-            className={`px-4 py-2 text-xs font-bold rounded-lg flex items-center gap-2 transition-all cursor-pointer border ${
-              activeTab === "export"
-                ? "bg-slate-900 border-slate-900 text-white dark:bg-slate-105 dark:border-slate-105 dark:text-slate-950 shadow-xs"
-                : "bg-white dark:bg-slate-900 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-gray-200 dark:border-slate-800"
-            }`}
-          >
-            <ClipboardList className="h-3.5 w-3.5" />
-            Worksheet & JSON Export
-          </button>
+        {/* Mobile nav — horizontal scroll strip */}
+        <div className="no-print md:hidden w-full border-b overflow-x-auto flex gap-1 px-3 py-2" style={{ borderColor: "#E0DBD1" }}>
+          {NAV_ITEMS.map(({ id, icon, label }) => {
+            const active = activeTab === id;
+            return (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold cursor-pointer transition-all"
+                style={active
+                  ? { backgroundColor: "#EFF3FD", color: "#1C4ED8" }
+                  : { color: "#64748B" }
+                }
+              >
+                {icon}{label}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Global Error Banner */}
-        {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-2xl flex gap-3 text-xs text-red-700 max-w-xl mx-auto no-print">
-            <AlertCircle className="h-4.5 w-4.5 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-bold">Extraction Command Failed</p>
-              <p>{error}</p>
-            </div>
-          </div>
-        )}
+        {/* Main content */}
+        <main className="flex-1 min-w-0 p-5 sm:p-7 space-y-5">
 
-        {/* Dynamic Workspace */}
-        <div className="space-y-6">
+          {error && (
+            <div className="flex gap-3 p-4 rounded-lg border text-sm no-print" style={{ backgroundColor: "#FEF2F2", borderColor: "#FECACA", color: "#991B1B" }}>
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold">Extraction failed</p>
+                <p className="text-xs mt-0.5 opacity-80">{error}</p>
+              </div>
+            </div>
+          )}
+
           {activeTab === "input" && (
-            <div className="space-y-6">
+            <div className="space-y-5">
               <TextAnalysisForm onSubmit={handleAnalyzeText} isLoading={isLoading} />
-              
-              {/* Educational info card displayed under simple instructions */}
-              <div className="bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 flex flex-col sm:flex-row gap-4 items-start shadow-md">
-                <Sparkles className="h-8 w-8 text-emerald-400 shrink-0 mt-0.5 animate-pulse" />
+              <div className="flex gap-4 p-5 rounded-xl border" style={{ backgroundColor: "#0F0F0E", borderColor: "#1e1e1e" }}>
+                <Layout className="h-5 w-5 shrink-0 mt-0.5" style={{ color: "#1C4ED8" }} />
                 <div className="space-y-1">
-                  <h4 className="text-sm font-bold">Linguistic Extraction Process</h4>
-                  <p className="text-xs text-gray-300 leading-relaxed max-w-2xl">
-                    Our platform automatically connects to high-performance parsing agents using advanced large language models. The engine maps standard English frequency curves, extracts core vocabulary adapted directly for high-stakes tests, parses idiomatic configurations, and identifies elegant, reusable structural templates.
+                  <p className="text-sm font-semibold text-white">How extraction works</p>
+                  <p className="text-xs leading-relaxed" style={{ color: "#94A3B8" }}>
+                    Paste any academic passage. The engine maps vocabulary against your target exam level, identifies high-value collocations and idioms, and surfaces reusable sentence structures — ready for flashcards, quizzes, and writing practice.
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === "analysis" && (
-            <AnalysisResults data={corpusData} onUpdate={handleUpdateCorpusData} />
-          )}
+          {activeTab === "analysis"   && <AnalysisResults data={corpusData} onUpdate={handleUpdateCorpusData} />}
+          {activeTab === "flashcards" && <FlashcardsView data={corpusData} masteredIds={masteredIds} setMasteredIds={setMasteredIds} />}
+          {activeTab === "tracker"    && <MasteryTracker data={corpusData} masteredIds={masteredIds} onToggleMastered={handleToggleMastered} />}
+          {activeTab === "quiz"       && <QuizView corpusData={corpusData} />}
+          {activeTab === "review"     && <SmartReviewView data={corpusData} />}
+          {activeTab === "wordbank"   && <WordBankView data={corpusData} masteredIds={masteredIds} onToggleMastered={handleToggleMastered} rawText={rawText} />}
+          {activeTab === "writing"    && <WritingPracticeView data={corpusData} />}
+          {activeTab === "rewrite"    && <AIRewriterView data={corpusData} />}
+          {activeTab === "export"     && <WorksheetExport data={corpusData} />}
 
-          {activeTab === "flashcards" && (
-            <FlashcardsView data={corpusData} masteredIds={masteredIds} setMasteredIds={setMasteredIds} />
-          )}
-
-          {activeTab === "tracker" && (
-            <MasteryTracker data={corpusData} masteredIds={masteredIds} onToggleMastered={handleToggleMastered} />
-          )}
-
-          {activeTab === "quiz" && (
-            <QuizView corpusData={corpusData} />
-          )}
-
-          {activeTab === "review" && (
-            <SmartReviewView data={corpusData} />
-          )}
-
-          {activeTab === "wordbank" && (
-            <WordBankView data={corpusData} masteredIds={masteredIds} onToggleMastered={handleToggleMastered} rawText={rawText} />
-          )}
-
-          {activeTab === "writing" && (
-            <WritingPracticeView data={corpusData} />
-          )}
-
-          {activeTab === "rewrite" && (
-            <AIRewriterView data={corpusData} />
-          )}
-
-          {activeTab === "export" && (
-            <WorksheetExport data={corpusData} />
-          )}
-        </div>
-      </main>
-
-      <footer className="bg-white border-t border-gray-200 py-6 mt-12 text-center text-xs text-slate-400 font-mono no-print">
-        <div className="max-w-7xl mx-auto px-4">
-          <p>Academic English Corpus Analyzer — Devoted to linguistic rigor and assessment excellence.</p>
-        </div>
-      </footer>
+        </main>
+      </div>
     </div>
   );
 }
