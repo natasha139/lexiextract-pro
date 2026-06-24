@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { CorpusAnalysisResult } from "../types";
-import { Printer, Copy, Check, FileCode, NotebookPen, AlertCircle, ExternalLink, Download, BookOpen, Layers, HelpCircle, Sigma, BarChart3, PieChart } from "lucide-react";
+import { Printer, Copy, Check, FileCode, NotebookPen, AlertCircle, Download, BookOpen, Layers, HelpCircle, Sigma, BarChart3, PieChart } from "lucide-react";
 import katex from "katex";
 
 interface LatexRendererProps {
@@ -244,6 +244,97 @@ export default function WorksheetExport({ data }: WorksheetExportProps) {
     setTimeout(() => setAnkiCopied(false), 2000);
   };
 
+  const generateHTML = () => {
+    const title = data.meta_data.title || "LexiExtract Worksheet";
+    const level = data.meta_data.target_level || "";
+    const source = data.meta_data.source || "";
+
+    const vocabRows = (includeVocab && data.vocabulary_blocks) ? data.vocabulary_blocks.map((b) => `
+      <div class="entry">
+        <div class="entry-head">
+          <span class="word">${b.item}</span>
+          <span class="pos">${b.part_of_speech}</span>
+        </div>
+        <div class="definition">${b.definition_en}</div>
+        <div class="context">"${b.contextual_sentence}"</div>
+        ${!isStudentMode && b.academic_example ? `<div class="model"><strong>Model:</strong> ${b.academic_example}</div>` : ""}
+        ${isStudentMode ? '<div class="write-line"></div><div class="write-line"></div>' : ""}
+      </div>`).join("") : "";
+
+    const phraseRows = (includePhrases && data.phrase_blocks) ? data.phrase_blocks.map((b) => `
+      <div class="entry entry-phrase">
+        <div class="entry-head">
+          <span class="word">${b.item}</span>
+        </div>
+        <div class="definition">${b.definition_en}</div>
+        <div class="context">"${b.contextual_sentence}"</div>
+        ${!isStudentMode && b.academic_example ? `<div class="model"><strong>Model:</strong> ${b.academic_example}</div>` : ""}
+        ${isStudentMode ? '<div class="write-line"></div><div class="write-line"></div>' : ""}
+      </div>`).join("") : "";
+
+    const patternRows = (includePatterns && data.sentence_patterns) ? data.sentence_patterns.map((b) => `
+      <div class="entry entry-pattern">
+        <div class="entry-head">
+          <code class="pattern-code">${b.pattern_structure}</code>
+        </div>
+        <div class="definition">${b.functional_purpose}</div>
+        <div class="context">"${b.contextual_sentence}"</div>
+        ${!isStudentMode && b.academic_example ? `<div class="model"><strong>Model:</strong> ${b.academic_example}</div>` : ""}
+        ${isStudentMode ? '<div class="write-line"></div><div class="write-line"></div>' : ""}
+      </div>`).join("") : "";
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${title}</title>
+<style>
+  body { font-family: Georgia, serif; background: #F5F2EB; color: #0F0F0E; max-width: 800px; margin: 0 auto; padding: 40px 32px; }
+  .header { border-bottom: 2px solid #0F0F0E; padding-bottom: 16px; margin-bottom: 32px; }
+  .header h1 { margin: 0 0 6px; font-size: 1.6rem; }
+  .header .meta { font-size: 0.8rem; color: #64748B; font-family: monospace; }
+  .section-title { font-size: 0.7rem; font-family: monospace; text-transform: uppercase; letter-spacing: 0.12em; color: #1C4ED8; margin: 32px 0 12px; border-bottom: 1px solid #E0DBD1; padding-bottom: 6px; }
+  .entry { border-left: 2px solid #1C4ED8; padding: 12px 16px; margin-bottom: 16px; background: #fff; }
+  .entry-phrase { border-left-color: #7C3AED; }
+  .entry-pattern { border-left-color: #B45309; }
+  .entry-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+  .word { font-size: 1.05rem; font-weight: 700; }
+  .pos { font-size: 0.7rem; font-family: monospace; color: #64748B; text-transform: uppercase; letter-spacing: 0.06em; }
+  .pattern-code { font-family: monospace; background: #FEF9C3; padding: 2px 6px; border-radius: 3px; color: #B45309; font-size: 0.9rem; }
+  .definition { font-size: 0.9rem; color: #1e293b; margin-bottom: 6px; }
+  .context { font-size: 0.85rem; color: #475569; font-style: italic; margin-bottom: 6px; }
+  .model { font-size: 0.82rem; color: #0f172a; background: #f8fafc; padding: 6px 10px; border-radius: 4px; border-left: 3px solid #10b981; margin-top: 6px; }
+  .write-line { border-bottom: 1px solid #CBD5E1; margin-top: 10px; height: 22px; }
+  @media print { body { background: white; padding: 0; } .entry { background: white; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>${title}</h1>
+  <div class="meta">${level}${source ? " · " + source : ""} · ${isStudentMode ? "Student Handout" : "Teacher Key"}</div>
+</div>
+${vocabRows ? `<div class="section-title">Section 1 — Vocabulary</div>${vocabRows}` : ""}
+${phraseRows ? `<div class="section-title">Section 2 — Phrases &amp; Collocations</div>${phraseRows}` : ""}
+${patternRows ? `<div class="section-title">Section 3 — Sentence Patterns</div>${patternRows}` : ""}
+</body>
+</html>`;
+  };
+
+  const handleDownloadHTML = () => {
+    const html = generateHTML();
+    const blob = new Blob([html], { type: "text/html;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const rawTitle = data.meta_data.title || "worksheet";
+    const safeTitle = rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, "_").substring(0, 30);
+    link.download = `lexiextract_${safeTitle}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex border-b border-gray-200 no-print">
@@ -445,13 +536,22 @@ export default function WorksheetExport({ data }: WorksheetExportProps) {
               )}
             </button>
           ) : activeSubTab === "printable" ? (
-            <button
-              onClick={handlePrint}
-              className="px-4.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap shadow-md shadow-emerald-600/10 hover:-translate-y-0.5"
-            >
-              <Printer className="h-4 w-4 stroke-[2.5]" />
-              Print / Export to PDF
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleDownloadHTML}
+                className="px-3.5 py-2 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap border border-gray-300 shadow-2xs"
+              >
+                <FileCode className="h-3.5 w-3.5" />
+                Download HTML
+              </button>
+              <button
+                onClick={handlePrint}
+                className="px-4.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap shadow-md shadow-emerald-600/10 hover:-translate-y-0.5"
+              >
+                <Printer className="h-4 w-4 stroke-[2.5]" />
+                Print / Export to PDF
+              </button>
+            </div>
           ) : (
             <div className="flex gap-2">
               <button
