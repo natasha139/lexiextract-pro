@@ -578,7 +578,7 @@ export default function AnalysisResults({ data, onUpdate }: AnalysisResultsProps
                   return (
                     <div
                       key={block.id}
-                      className="bg-white rounded-xl border border-emerald-100 hover:border-emerald-200 shadow-xs hover:shadow-md transition-all duration-200 p-5 relative overflow-hidden flex flex-col justify-between"
+                      className="bg-white rounded-xl border border-emerald-100 hover:border-emerald-200 shadow-xs hover:shadow-md transition-all duration-200 p-3 relative overflow-hidden flex flex-col justify-between"
                     >
                       {/* Left color bar decorator */}
                       <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-emerald-500"></div>
@@ -604,7 +604,7 @@ export default function AnalysisResults({ data, onUpdate }: AnalysisResultsProps
                             <div className="flex items-center gap-2.5">
                               <h4 
                                 onClick={() => triggerLookup(block.item)}
-                                className="text-lg font-display font-bold text-slate-900 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors border-b border-dashed border-transparent hover:border-emerald-500"
+                                className="text-sm font-display font-bold text-slate-900 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors border-b border-dashed border-transparent hover:border-emerald-500"
                                 title={`Click to look up "${block.item}"`}
                               >
                                 {block.item}
@@ -674,7 +674,7 @@ export default function AnalysisResults({ data, onUpdate }: AnalysisResultsProps
                               className="w-full px-2 py-1 border text-sm rounded-md"
                             />
                           ) : (
-                            <p className="text-sm text-slate-700 leading-relaxed font-sans">{makeTextClickable(block.definition_en)}</p>
+                            <p className="text-xs text-slate-700 leading-relaxed font-sans">{makeTextClickable(block.definition_en)}</p>
                           )}
                         </div>
 
@@ -741,7 +741,7 @@ export default function AnalysisResults({ data, onUpdate }: AnalysisResultsProps
                   return (
                     <div
                       key={block.id}
-                      className="bg-white rounded-xl border border-indigo-100 hover:border-indigo-200 shadow-xs hover:shadow-md transition-all duration-200 p-5 relative overflow-hidden flex flex-col justify-between"
+                      className="bg-white rounded-xl border border-indigo-100 hover:border-indigo-200 shadow-xs hover:shadow-md transition-all duration-200 p-3 relative overflow-hidden flex flex-col justify-between"
                     >
                       {/* Left color bar decorator */}
                       <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-indigo-500"></div>
@@ -756,9 +756,9 @@ export default function AnalysisResults({ data, onUpdate }: AnalysisResultsProps
                               className="font-semibold text-gray-900 px-2 py-0.5 border rounded-md text-base w-full"
                             />
                           ) : (
-                            <h4 
+                            <h4
                               onClick={() => triggerLookup(block.item)}
-                              className="text-lg font-display font-bold text-slate-900 leading-tight hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-colors border-b border-dashed border-transparent hover:border-indigo-500"
+                              className="text-sm font-display font-bold text-slate-900 leading-tight hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-colors border-b border-dashed border-transparent hover:border-indigo-500"
                               title={`Click to look up "${block.item}"`}
                             >
                               {block.item}
@@ -821,7 +821,7 @@ export default function AnalysisResults({ data, onUpdate }: AnalysisResultsProps
                               className="w-full px-2 py-1 border text-sm rounded-md"
                             />
                           ) : (
-                            <p className="text-sm text-slate-700 leading-relaxed font-sans">{makeTextClickable(block.definition_en)}</p>
+                            <p className="text-xs text-slate-700 leading-relaxed font-sans">{makeTextClickable(block.definition_en)}</p>
                           )}
                         </div>
 
@@ -886,7 +886,7 @@ export default function AnalysisResults({ data, onUpdate }: AnalysisResultsProps
                   return (
                     <div
                       key={block.id}
-                      className="bg-white rounded-xl border border-amber-100 hover:border-amber-200 shadow-xs hover:shadow-md transition-all duration-200 p-5 relative overflow-hidden flex flex-col justify-between"
+                      className="bg-white rounded-xl border border-amber-100 hover:border-amber-200 shadow-xs hover:shadow-md transition-all duration-200 p-3 relative overflow-hidden flex flex-col justify-between"
                     >
                       {/* Left color bar decorator */}
                       <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-amber-500"></div>
