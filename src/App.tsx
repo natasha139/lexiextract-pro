@@ -12,7 +12,8 @@ import WordBankView from "./components/WordBankView";
 import SmartReviewView from "./components/SmartReviewView";
 import WritingPracticeView from "./components/WritingPracticeView";
 import AIRewriterView from "./components/AIRewriterView";
-import { GraduationCap, FileInput, Languages, BookCheck, ClipboardList, BookOpen, AlertCircle, Sparkles, TrendingUp, Sun, Moon, Brain, BookMarked, PenTool, Layout, History, Trash2 } from "lucide-react";
+import ManualEntryForm from "./components/ManualEntryForm";
+import { GraduationCap, FileInput, Languages, BookCheck, ClipboardList, BookOpen, AlertCircle, Sparkles, TrendingUp, Sun, Moon, Brain, BookMarked, PenTool, Layout, History, Trash2, PenLine } from "lucide-react";
 import { useTheme } from "./components/ThemeProvider";
 
 // Preloaded beautiful dataset so that the app works instantly on load,
@@ -109,6 +110,7 @@ export default function App() {
   const [masteredIds, setMasteredIds] = useState<Set<string>>(new Set());
   const [history, setHistory] = useState<{ id: string; title: string; source: string; target_level: string; created_at: number }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [inputMode, setInputMode] = useState<"ai" | "manual">("ai");
 
   useEffect(() => {
     fetch(`${API_BASE}/api/corpus`)
@@ -348,16 +350,41 @@ export default function App() {
 
           {activeTab === "input" && (
             <div className="space-y-5">
-              <TextAnalysisForm onSubmit={handleAnalyzeText} isLoading={isLoading} />
-              <div className="flex gap-4 p-5 rounded-xl border" style={{ backgroundColor: "#0F0F0E", borderColor: "#1e1e1e" }}>
-                <Layout className="h-5 w-5 shrink-0 mt-0.5" style={{ color: "#1C4ED8" }} />
-                <div className="space-y-1">
-                  <p className="text-sm font-semibold text-white">How extraction works</p>
-                  <p className="text-xs leading-relaxed" style={{ color: "#94A3B8" }}>
-                    Paste any academic passage. The engine maps vocabulary against your target exam level, identifies high-value collocations and idioms, and surfaces reusable sentence structures — ready for flashcards, quizzes, and writing practice.
-                  </p>
-                </div>
+              {/* Mode toggle */}
+              <div className="flex gap-2 p-1 rounded-lg w-fit" style={{ backgroundColor: "#E0DBD1" }}>
+                <button type="button" onClick={() => setInputMode("ai")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all cursor-pointer"
+                  style={inputMode === "ai" ? { backgroundColor: "#ffffff", color: "#1C4ED8", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" } : { color: "#64748B" }}>
+                  <Sparkles className="h-3.5 w-3.5" /> AI 提取
+                </button>
+                <button type="button" onClick={() => setInputMode("manual")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all cursor-pointer"
+                  style={inputMode === "manual" ? { backgroundColor: "#ffffff", color: "#1C4ED8", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" } : { color: "#64748B" }}>
+                  <PenLine className="h-3.5 w-3.5" /> 手动录入
+                </button>
               </div>
+
+              {inputMode === "ai" ? (
+                <>
+                  <TextAnalysisForm onSubmit={handleAnalyzeText} isLoading={isLoading} />
+                  <div className="flex gap-4 p-5 rounded-xl border" style={{ backgroundColor: "#0F0F0E", borderColor: "#1e1e1e" }}>
+                    <Layout className="h-5 w-5 shrink-0 mt-0.5" style={{ color: "#1C4ED8" }} />
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-white">How extraction works</p>
+                      <p className="text-xs leading-relaxed" style={{ color: "#94A3B8" }}>
+                        Paste any academic passage. The engine maps vocabulary against your target exam level, identifies high-value collocations and idioms, and surfaces reusable sentence structures — ready for flashcards, quizzes, and writing practice.
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <ManualEntryForm onSubmit={(data) => {
+                  setCorpusData(data);
+                  setActiveTab("analysis");
+                  const runId = `run_${Date.now()}`;
+                  saveToD1(data, runId);
+                }} />
+              )}
             </div>
           )}
 
