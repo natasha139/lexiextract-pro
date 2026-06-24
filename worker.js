@@ -60,18 +60,18 @@ async function handleAnalyze(request, env) {
   const docCategory = category || "Academic Text";
   const currentDensity = density || "standard";
 
-  let wordCountDesc = "5 to 8 essential academic, thematic, or functional words";
-  let phraseCountDesc = "4 to 6 high-quality phrasal verbs, idioms, native collocations, or formulaic chunks";
-  let patternCountDesc = "3 to 4 elegant, advanced syntactic structures";
+  let wordCountDesc = "15 to 20 essential academic, thematic, or functional words";
+  let phraseCountDesc = "10 to 14 high-quality phrasal verbs, idioms, native collocations, or formulaic chunks";
+  let patternCountDesc = "6 to 9 elegant, advanced syntactic structures";
 
   if (currentDensity === "low") {
-    wordCountDesc = "3 to 4 essential academic, thematic, or functional words";
-    phraseCountDesc = "2 to 3 high-quality phrasal verbs, idioms, or native collocations";
-    patternCountDesc = "1 to 2 elegant, advanced syntactic structures";
+    wordCountDesc = "8 to 12 essential academic, thematic, or functional words";
+    phraseCountDesc = "5 to 8 high-quality phrasal verbs, idioms, or native collocations";
+    patternCountDesc = "3 to 5 elegant, advanced syntactic structures";
   } else if (currentDensity === "high") {
-    wordCountDesc = "12 to 18 essential academic, thematic, or functional words";
-    phraseCountDesc = "8 to 12 high-quality phrasal verbs, idioms, native collocations, or formulaic chunks";
-    patternCountDesc = "5 to 7 advanced syntactic structures";
+    wordCountDesc = "35 to 40 essential academic, thematic, or functional words";
+    phraseCountDesc = "20 to 25 high-quality phrasal verbs, idioms, native collocations, or formulaic chunks";
+    patternCountDesc = "12 to 15 advanced syntactic structures";
   }
 
   const systemPrompt = "You are an elite academic English corpus linguist. Extract precise pedagogical lexical items and grammar patterns. Output only valid JSON, no markdown fences.";
