@@ -4,3 +4,9 @@ compatibility_date = "2024-01-01"
 
 [vars]
 # DASHSCOPE_API_KEY is set via: wrangler secret put DASHSCOPE_API_KEY
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lexiextract-db"
+database_id = "5dacfa0a-21eb-4cc1-a877-e21b273846c4"
+

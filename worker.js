@@ -262,6 +262,39 @@ Return JSON:
   return jsonResponse(JSON.parse(resultText));
 }
 
+async function handleCorpusList(env) {
+  const { results } = await env.DB.prepare(
+    "SELECT id, title, source, target_level, created_at FROM corpus_runs ORDER BY created_at DESC LIMIT 50"
+  ).all();
+  return jsonResponse(results);
+}
+
+async function handleCorpusSave(request, env) {
+  const body = await request.json();
+  const { id, data } = body;
+  if (!id || !data) return errorResponse("id and data required", 400);
+  const meta = data.meta_data || {};
+  await env.DB.prepare(
+    "INSERT OR REPLACE INTO corpus_runs (id, title, source, target_level, created_at, data) VALUES (?, ?, ?, ?, ?, ?)"
+  ).bind(id, meta.title || "Untitled", meta.source || "", meta.target_level || "", Date.now(), JSON.stringify(data)).run();
+  return jsonResponse({ ok: true });
+}
+
+async function handleCorpusGet(request, env) {
+  const url = new URL(request.url);
+  const id = url.pathname.split("/").pop();
+  const row = await env.DB.prepare("SELECT data FROM corpus_runs WHERE id = ?").bind(id).first();
+  if (!row) return errorResponse("Not found", 404);
+  return jsonResponse(JSON.parse(row.data));
+}
+
+async function handleCorpusDelete(request, env) {
+  const url = new URL(request.url);
+  const id = url.pathname.split("/").pop();
+  await env.DB.prepare("DELETE FROM corpus_runs WHERE id = ?").bind(id).run();
+  return jsonResponse({ ok: true });
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
@@ -279,6 +312,14 @@ export default {
         if (path === "/api/writing-feedback") return await handleWritingFeedback(request, env);
         if (path === "/api/article-rewrite") return await handleArticleRewrite(request, env);
         if (path === "/api/dictionary-lookup") return await handleDictionaryLookup(request, env);
+        if (path === "/api/corpus") return await handleCorpusSave(request, env);
+      }
+      if (request.method === "GET") {
+        if (path === "/api/corpus") return await handleCorpusList(env);
+        if (path.startsWith("/api/corpus/")) return await handleCorpusGet(request, env);
+      }
+      if (request.method === "DELETE") {
+        if (path.startsWith("/api/corpus/")) return await handleCorpusDelete(request, env);
       }
       return errorResponse("Not found", 404);
     } catch (err) {

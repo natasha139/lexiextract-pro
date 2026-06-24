@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CorpusAnalysisResult } from "./types";
 import { API_BASE } from "./config";
 import { ACADEMIC_SAMPLES } from "./data/samples";
@@ -12,7 +12,7 @@ import WordBankView from "./components/WordBankView";
 import SmartReviewView from "./components/SmartReviewView";
 import WritingPracticeView from "./components/WritingPracticeView";
 import AIRewriterView from "./components/AIRewriterView";
-import { GraduationCap, FileInput, Languages, BookCheck, ClipboardList, BookOpen, AlertCircle, Sparkles, TrendingUp, Sun, Moon, Brain, BookMarked, PenTool, Layout } from "lucide-react";
+import { GraduationCap, FileInput, Languages, BookCheck, ClipboardList, BookOpen, AlertCircle, Sparkles, TrendingUp, Sun, Moon, Brain, BookMarked, PenTool, Layout, History, Trash2 } from "lucide-react";
 import { useTheme } from "./components/ThemeProvider";
 
 // Preloaded beautiful dataset so that the app works instantly on load,
@@ -107,6 +107,44 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [masteredIds, setMasteredIds] = useState<Set<string>>(new Set());
+  const [history, setHistory] = useState<{ id: string; title: string; source: string; target_level: string; created_at: number }[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/corpus`)
+      .then(r => r.ok ? r.json() : [])
+      .then(rows => setHistory(rows))
+      .catch(() => {});
+  }, []);
+
+  const saveToD1 = async (data: CorpusAnalysisResult, id: string) => {
+    try {
+      await fetch(`${API_BASE}/api/corpus`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, data }),
+      });
+      const rows = await fetch(`${API_BASE}/api/corpus`).then(r => r.json());
+      setHistory(rows);
+    } catch {}
+  };
+
+  const loadFromHistory = async (id: string) => {
+    try {
+      const r = await fetch(`${API_BASE}/api/corpus/${id}`);
+      if (!r.ok) return;
+      const data: CorpusAnalysisResult = await r.json();
+      setCorpusData(data);
+      setShowHistory(false);
+      setActiveTab("analysis");
+    } catch {}
+  };
+
+  const deleteFromHistory = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    await fetch(`${API_BASE}/api/corpus/${id}`, { method: "DELETE" });
+    setHistory(prev => prev.filter(h => h.id !== id));
+  };
 
   const handleToggleMastered = (id: string) => {
     setMasteredIds((prev) => {
@@ -146,9 +184,11 @@ export default function App() {
       }
 
       const analyzedPayload: CorpusAnalysisResult = await response.json();
+      const runId = `run_${Date.now()}`;
       setCorpusData(analyzedPayload);
       setRawText(formData.text);
       setActiveTab("analysis");
+      saveToD1(analyzedPayload, runId);
     } catch (err: any) {
       console.error(err);
       setError(err.message || "An unexpected network error occurred while querying the corpus engine.");
@@ -193,14 +233,55 @@ export default function App() {
               {corpusData.meta_data.target_level}
             </span>
           </div>
-          <button
-            onClick={toggleTheme}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border cursor-pointer transition-colors"
-            style={{ borderColor: "#E0DBD1", color: "#64748B" }}
-          >
-            {theme === "light" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
-            <span className="hidden sm:inline">{theme === "light" ? "Dark" : "Light"}</span>
-          </button>
+          <div className="flex items-center gap-2 relative">
+            {/* History button */}
+            <button
+              onClick={() => setShowHistory(v => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border cursor-pointer transition-colors"
+              style={{ borderColor: showHistory ? "#1C4ED8" : "#E0DBD1", color: showHistory ? "#1C4ED8" : "#64748B", backgroundColor: showHistory ? "#EFF3FD" : "transparent" }}
+            >
+              <History className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">历史 ({history.length})</span>
+            </button>
+
+            {/* History dropdown */}
+            {showHistory && (
+              <div className="absolute right-0 top-10 w-80 bg-white border rounded-xl shadow-xl z-50 overflow-hidden" style={{ borderColor: "#E0DBD1" }}>
+                <div className="px-4 py-2.5 border-b text-xs font-semibold text-slate-500 flex items-center justify-between" style={{ borderColor: "#E0DBD1" }}>
+                  <span>分析历史</span>
+                  <span className="text-[10px] text-slate-400">点击加载 · 刷新不丢失</span>
+                </div>
+                {history.length === 0 ? (
+                  <div className="px-4 py-8 text-center text-xs text-slate-400">暂无历史记录</div>
+                ) : (
+                  <div className="max-h-72 overflow-y-auto divide-y" style={{ borderColor: "#f1f5f9" }}>
+                    {history.map(h => (
+                      <div key={h.id} onClick={() => loadFromHistory(h.id)}
+                        className="px-4 py-2.5 hover:bg-slate-50 cursor-pointer flex items-center justify-between gap-2 group">
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-slate-800 truncate">{h.title || "Untitled"}</p>
+                          <p className="text-[10px] text-slate-400 truncate">{h.target_level} · {new Date(h.created_at).toLocaleDateString('zh-CN')}</p>
+                        </div>
+                        <button onClick={(e) => deleteFromHistory(h.id, e)}
+                          className="opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-red-400 transition-all cursor-pointer shrink-0">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border cursor-pointer transition-colors"
+              style={{ borderColor: "#E0DBD1", color: "#64748B" }}
+            >
+              {theme === "light" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">{theme === "light" ? "Dark" : "Light"}</span>
+            </button>
+          </div>
         </div>
       </header>
 
