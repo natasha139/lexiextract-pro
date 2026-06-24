@@ -14,6 +14,7 @@ interface ExtractedItem {
   type: ItemType;
   text: string;
   cefr: string | null;
+  contextual_sentence: string;
 }
 
 function cefrLevel(text: string): string | null {
@@ -33,7 +34,17 @@ export default function ManualEntryForm({ onSubmit }: ManualEntryFormProps) {
   const [targetLevel, setTargetLevel] = useState("IELTS");
   const [category, setCategory] = useState("");
   const [items, setItems] = useState<ExtractedItem[]>([]);
-  const [menu, setMenu] = useState<{ x: number; y: number; text: string } | null>(null);
+  const [menu, setMenu] = useState<{ x: number; y: number; text: string; sentence: string } | null>(null);
+
+  function extractSentence(fullText: string, selStart: number): string {
+    const sentenceEnds = /[.!?]/;
+    let start = selStart;
+    while (start > 0 && !sentenceEnds.test(fullText[start - 1])) start--;
+    let end = selStart;
+    while (end < fullText.length && !sentenceEnds.test(fullText[end])) end++;
+    if (end < fullText.length) end++;
+    return fullText.substring(start, end).trim();
+  }
   const taRef = useRef<HTMLTextAreaElement>(null);
 
   const handleContextMenu = (e: React.MouseEvent<HTMLTextAreaElement>) => {
@@ -42,7 +53,8 @@ export default function ManualEntryForm({ onSubmit }: ManualEntryFormProps) {
     if (!ta) return;
     const text = ta.value.substring(ta.selectionStart, ta.selectionEnd).trim();
     if (!text || text.length < 2) return;
-    setMenu({ x: e.clientX - 40, y: e.clientY - 54, text });
+    const sentence = extractSentence(ta.value, ta.selectionStart);
+    setMenu({ x: e.clientX - 40, y: e.clientY - 54, text, sentence });
   };
 
   const addItem = (type: ItemType) => {
@@ -52,6 +64,7 @@ export default function ManualEntryForm({ onSubmit }: ManualEntryFormProps) {
       type,
       text: menu.text,
       cefr: cefrLevel(menu.text),
+      contextual_sentence: menu.sentence,
     };
     setItems(prev => [...prev, newItem]);
     setMenu(null);
@@ -68,15 +81,15 @@ export default function ManualEntryForm({ onSubmit }: ManualEntryFormProps) {
   const handleSubmit = () => {
     const vocabulary_blocks: VocabularyBlock[] = wordItems.map(i => ({
       id: i.id, type: "word", item: i.text,
-      part_of_speech: "noun", definition_en: "", contextual_sentence: "", academic_example: "",
+      part_of_speech: "noun", definition_en: "", contextual_sentence: i.contextual_sentence, academic_example: "",
     }));
     const phrase_blocks: PhraseBlock[] = phraseItems.map(i => ({
       id: i.id, type: "phrase_collocation_idiom", item: i.text,
-      definition_en: "", contextual_sentence: "", academic_example: "",
+      definition_en: "", contextual_sentence: i.contextual_sentence, academic_example: "",
     }));
     const sentence_patterns: SentencePattern[] = patternItems.map(i => ({
       id: i.id, type: "pattern", pattern_structure: i.text,
-      functional_purpose: "", contextual_sentence: "", academic_example: "",
+      functional_purpose: "", contextual_sentence: i.contextual_sentence, academic_example: "",
     }));
     onSubmit({
       meta_data: { title: title || "Manual Entry", source: source || "User Input", category: category || "Manual", target_level: targetLevel },
