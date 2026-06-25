@@ -12,7 +12,7 @@ import WordBankView from "./components/WordBankView";
 import SmartReviewView from "./components/SmartReviewView";
 import WritingPracticeView from "./components/WritingPracticeView";
 import AIRewriterView from "./components/AIRewriterView";
-import ManualEntryForm from "./components/ManualEntryForm";
+import ManualEntryForm, { MANUAL_FORM_INITIAL, ManualFormState } from "./components/ManualEntryForm";
 import { GraduationCap, FileInput, Languages, BookCheck, ClipboardList, BookOpen, AlertCircle, Sparkles, TrendingUp, Sun, Moon, Brain, BookMarked, PenTool, Layout, History, Trash2, PenLine } from "lucide-react";
 import { useTheme } from "./components/ThemeProvider";
 
@@ -111,6 +111,7 @@ export default function App() {
   const [history, setHistory] = useState<{ id: string; title: string; source: string; target_level: string; created_at: number }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [inputMode, setInputMode] = useState<"ai" | "manual">("ai");
+  const [manualFormState, setManualFormState] = useState<ManualFormState>(MANUAL_FORM_INITIAL);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/corpus`)
@@ -378,7 +379,10 @@ export default function App() {
                   </div>
                 </>
               ) : (
-                <ManualEntryForm onSubmit={(data) => {
+                <ManualEntryForm
+                  state={manualFormState}
+                  onChange={setManualFormState}
+                  onSubmit={(data) => {
                   setCorpusData(data);
                   setActiveTab("analysis");
                   const runId = `run_${Date.now()}`;
