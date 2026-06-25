@@ -101,7 +101,7 @@ export default function ManualEntryForm({ state, onChange, onSubmit }: ManualEnt
       functional_purpose: "", contextual_sentence: i.contextual_sentence, academic_example: "",
     }));
     onSubmit({
-      meta_data: { title: title || "Manual Entry", source: source || "User Input", category: category || "Manual", target_level: targetLevel },
+      meta_data: { title: title || "Manual Entry", source: source || "User Input", category: category || "Manual", target_level: targetLevel, passage, entry_mode: "manual" },
       vocabulary_blocks, phrase_blocks, sentence_patterns,
     });
   };

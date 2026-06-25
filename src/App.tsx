@@ -139,7 +139,24 @@ export default function App() {
       const data: CorpusAnalysisResult = await r.json();
       setCorpusData(data);
       setShowHistory(false);
-      setActiveTab("analysis");
+      if (data.meta_data?.entry_mode === "manual") {
+        setInputMode("manual");
+        setManualFormState({
+          title: data.meta_data.title || "",
+          source: data.meta_data.source || "",
+          targetLevel: data.meta_data.target_level || "IELTS",
+          category: data.meta_data.category || "",
+          passage: data.meta_data.passage || "",
+          items: [
+            ...data.vocabulary_blocks.map(v => ({ id: v.id, type: "word" as const, text: v.item, cefr: null, contextual_sentence: v.contextual_sentence })),
+            ...data.phrase_blocks.map(p => ({ id: p.id, type: "phrase" as const, text: p.item, cefr: null, contextual_sentence: p.contextual_sentence })),
+            ...data.sentence_patterns.map(s => ({ id: s.id, type: "pattern" as const, text: s.pattern_structure, cefr: null, contextual_sentence: s.contextual_sentence })),
+          ],
+        });
+        setActiveTab("input");
+      } else {
+        setActiveTab("analysis");
+      }
     } catch {}
   };
 

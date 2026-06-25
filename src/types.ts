@@ -3,6 +3,8 @@ export interface MetaData {
   source: string;
   category: string;
   target_level: string;
+  passage?: string;
+  entry_mode?: "ai" | "manual";
 }
 
 export interface VocabularyBlock {
