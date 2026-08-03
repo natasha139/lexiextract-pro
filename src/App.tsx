@@ -303,6 +303,28 @@ export default function App() {
             </button>
           </div>
         </div>
+
+        {/* Project links strip */}
+        <div className="no-print border-t flex items-center gap-1.5 flex-wrap px-5 py-1.5" style={{ borderColor: "#E0DBD1" }}>
+          <span className="text-[9px] font-bold font-mono mr-1 tracking-wider" style={{ color: "#94A3B8" }}>PROJECTS</span>
+          <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border" style={{ backgroundColor: "#EFF3FD", color: "#1C4ED8", borderColor: "#bfdbfe" }}>
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#1C4ED8", display: "inline-block" }} />LexiExtract
+          </span>
+          {[
+            { id: 'input-pipeline', label: 'Input Pipeline', url: 'https://input-pipeline.pages.dev', dot: '#60a5fa' },
+            { id: 'writing-archive', label: 'Writing Archive', url: 'https://natasha-ielts-library.pages.dev', dot: '#34d399' },
+            { id: 'encounter', label: 'Encounter', url: 'https://encounter-app.pages.dev', dot: '#a78bfa' },
+            { id: 'techo', label: 'Techo App', url: 'https://techo-app.pages.dev', dot: '#f59e0b' },
+            { id: 'phd', label: 'PhD Toolkit', url: 'https://phd-app-toolkit.pages.dev', dot: '#fb7185' },
+            { id: 'fillinblanks', label: 'Fill-in-Blanks', url: 'https://fill-in-blanks.pages.dev', dot: '#4f46e5' },
+          ].map(p => (
+            <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border transition-colors hover:opacity-80"
+              style={{ backgroundColor: "#F5F2EB", color: "#64748B", borderColor: "#E0DBD1" }}>
+              <span style={{ width: 5, height: 5, borderRadius: "50%", background: p.dot, display: "inline-block" }} />{p.label}
+            </a>
+          ))}
+        </div>
       </header>
 
       {/* ── Body: sidebar + content ── */}
