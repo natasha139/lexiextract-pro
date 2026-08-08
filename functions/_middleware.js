@@ -1,7 +1,6 @@
 const APP_NAME = 'LexiExtract Pro';
 const COOKIE_NAME = '__Host-writing_archive_session';
 const SESSION_SECONDS = 12 * 60 * 60;
-const PUBLIC_PATHS = new Set(['/access-gate.js']);
 const encoder = new TextEncoder();
 
 function response(body, status, contentType, headers = {}) {
@@ -143,8 +142,6 @@ function loginPage() {
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-
-  if (PUBLIC_PATHS.has(url.pathname)) return context.next();
 
   if (url.pathname === '/__access/login' && request.method === 'POST') {
     if (!env.ACCESS_CODE || !env.SESSION_SECRET) {
